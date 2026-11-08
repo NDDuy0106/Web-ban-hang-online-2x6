@@ -1,0 +1,2 @@
+.filter-drawer{display:none}.filter-drawer summary{list-style:none;cursor:pointer;border:1px solid var(--line);background:white;padding:11px 13px;color:#5e554e;font-weight:600;margin-bottom:10px}.filter-drawer summary::-webkit-details-marker{display:none}
+@media(max-width:800px){.desktop-filter{display:none!important}.filter-drawer{display:block}.filter-drawer[open] .filter-panel{display:block}.filter-drawer .filter-panel{margin-top:8px;box-shadow:var(--shadow)}}

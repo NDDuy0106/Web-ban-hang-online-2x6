@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import "./globals.css";
 import "./shop.css";
+import "./shop-responsive.css";
 import {Header} from "@/components/header";
 import {Footer} from "@/components/footer";
 import {ChatWidget} from "@/components/chat-widget";
