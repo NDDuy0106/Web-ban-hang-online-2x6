@@ -17,6 +17,7 @@ DATABASE_URL="file:./dev.db"
 GEMINI_API_KEY="YOUR_NEW_API_KEY"
 GEMINI_MODEL="gemini-3.8-flash"
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+AUTH_SECRET="THAY_BANG_CHUOI_NGAU_NHIEN_IT_NHAT_32_KY_TU"
 ```
 
 ### Lấy Gemini API key
@@ -39,9 +40,16 @@ Mở http://localhost:3000.
 - Chi tiết: ảnh, biến thể, mô tả, thành phần, cách dùng, review và sản phẩm liên quan.
 - Giỏ hàng persist localStorage, coupon SIXNATURE10/FREESHIP, tồn kho và freeship từ 500.000₫.
 - Checkout COD/chuyển khoản, Zod validation, lưu Order/OrderItem; trang đơn hàng thành công.
+- Tài khoản: đăng ký, đăng nhập, đăng xuất; mật khẩu băm bcrypt và phiên đăng nhập JWT trong cookie HttpOnly, SameSite=Lax, thời hạn 7 ngày.
 - Trang giới thiệu, đổi trả, vận chuyển, liên hệ; sitemap, robots.
 - Chatbot Sixnature với 5 Gemini functions: searchProducts, getProductDetail, getStorePolicy, buildRoutine, checkStock; SSE stream token, sản phẩm hiển thị từ dữ liệu thật.
 - Giới hạn 500 ký tự và rate limit IP memory-based.
+
+## Thiết lập đăng nhập
+1. Tạo `AUTH_SECRET` ngẫu nhiên dài ít nhất 32 ký tự (ví dụ `openssl rand -base64 32`) và đặt trong `.env.local`.
+2. Sau khi cập nhật code, chạy `npm install` để cài `bcryptjs` và `jose`.
+3. Chạy `npx prisma migrate dev --name add_user_auth` để tạo bảng `User`.
+4. Khởi động lại `npm run dev`, mở `/tai-khoan` để đăng ký hoặc đăng nhập.
 
 ## Chỉnh sửa catalog và system prompt
 - 20 sản phẩm và thương hiệu giả: `lib/catalog.ts`. Chạy `npm run db:seed` để seed lại.
