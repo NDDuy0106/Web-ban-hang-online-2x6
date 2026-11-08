@@ -10,7 +10,7 @@ const sse=(type:string,data:Record<string,unknown>)=>`event: ${type}\ndata: ${JS
 type ToolCall={id:string;name:string;arguments:string};
 type EventShape={event_type?:string;index?:number;step?:{type?:string;id?:string;name?:string;arguments?:unknown};delta?:{type?:string;text?:string;partial_arguments?:string};interaction?:{id?:string}};
 function safeArgs(value:string):Record<string,unknown>{try{const v:unknown=JSON.parse(value||"{}");return v&&typeof v==="object"&&!Array.isArray(v)?v as Record<string,unknown>:{};}catch{return {};}}
-function publicProduct(p:Product){return{id:p.id,slug:p.slug,name:p.name,price:p.salePrice??p.price,image:p.image,stock:p.stock};}
+function publicProduct(p:Product):Product{return p;}
 export async function POST(req:NextRequest){
 const ip=req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()||"unknown",now=Date.now(),bucket=buckets.get(ip);if(bucket&&bucket.reset>now&&bucket.count>=12)return new Response(sse("error",{message:"Bạn gửi câu hỏi hơi nhanh. Hãy thử lại sau một phút nhé."}),{status:429,headers:{"Content-Type":"text/event-stream"}});if(!bucket||bucket.reset<=now)buckets.set(ip,{count:1,reset:now+60_000});else bucket.count++;
 let payload:unknown;try{payload=await req.json();}catch{return Response.json({error:"Dữ liệu không hợp lệ."},{status:400});}const parsed=chatSchema.safeParse(payload);if(!parsed.success)return Response.json({error:"Tin nhắn tối đa 500 ký tự."},{status:400});if(!process.env.GEMINI_API_KEY)return new Response(sse("error",{message:"Tính năng tư vấn AI chưa được cấu hình. Bạn vui lòng liên hệ cửa hàng qua hotline 1900 6868 nhé."}),{status:503,headers:{"Content-Type":"text/event-stream"}});
