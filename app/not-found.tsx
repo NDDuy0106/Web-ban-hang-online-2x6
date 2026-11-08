@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound(){return <div className="container"><section className="success-box"><h1 style={{font:"36px Georgia"}}>Không tìm thấy trang</h1><p className="muted">Đường dẫn bạn truy cập không tồn tại hoặc sản phẩm đã được gỡ.</p><Link className="hero-cta" href="/">Về trang chủ</Link></section></div>}

@@ -1,0 +1,3 @@
+import type {Metadata} from "next";
+export const metadata:Metadata={title:"Liên hệ"};
+export default function Contact(){return <div className="container"><div className="page-head">Trang chủ / Liên hệ</div><section className="success-box" style={{textAlign:"left"}}><h1 style={{font:"30px Georgia"}}>Liên hệ Mộc Nhiên Beauty</h1><p>Đội ngũ chăm sóc khách hàng luôn sẵn sàng hỗ trợ bạn chọn sản phẩm và giải đáp thông tin đơn hàng.</p><p><b>Hotline:</b> 1900 6868</p><p><b>Email:</b> hello@mocnhienbeauty.vn</p><p><b>Thời gian hỗ trợ:</b> 08:30 – 21:00, Thứ Hai đến Chủ Nhật.</p><p><b>Địa chỉ:</b> 28 Đường Hoa Ban, Hà Nội (địa chỉ minh họa cho bản demo).</p></section></div>}

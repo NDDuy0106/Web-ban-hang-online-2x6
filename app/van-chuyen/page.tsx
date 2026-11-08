@@ -1,0 +1,3 @@
+import type {Metadata} from "next";
+export const metadata:Metadata={title:"Chính sách vận chuyển"};
+export default function Shipping(){return <div className="container"><div className="page-head">Trang chủ / Vận chuyển</div><section className="success-box" style={{textAlign:"left"}}><h1 style={{font:"30px Georgia"}}>Chính sách vận chuyển</h1><p>Đơn hàng từ 500.000₫ được miễn phí vận chuyển. Đơn dưới mức này áp dụng phí tiêu chuẩn 30.000₫.</p><p>Thời gian giao dự kiến 2–5 ngày làm việc tùy khu vực, không tính ngày nghỉ lễ. Nhân viên giao hàng sẽ liên hệ trước khi giao.</p><p>Bạn có thể chọn thanh toán COD hoặc chuyển khoản. Thông tin tài khoản ngân hàng trong bản demo chỉ để minh họa.</p><p>Mọi thắc mắc vui lòng liên hệ hotline 1900 6868.</p></section></div>}
