@@ -69,7 +69,7 @@ export async function runChatTool(name:string,args:Args):Promise<{text:string;pr
       const skinScore=skinMatches(p,skin);
       const stockScore=p.stock>0?2:-3;
       const brandScore=brand&&normalize(p.brand).includes(brand)?3:0;
-      return {p,score:phraseBonus+queryScore+concernScore*2+skinScore+stockScore+brandScore};
+      return {p,queryScore,concernScore,score:phraseBonus+queryScore+concernScore*2+skinScore+stockScore+brandScore};
     }).filter(x=>(!queryTerms.length||x.queryScore+x.concernScore*2>=Math.min(2,queryTerms.length))&&(!skin||skinMatches(x.p,skin)>0))
       .sort((a,b)=>b.score-a.score||(b.p.stock>0?1:0)-(a.p.stock>0?1:0)||(a.p.salePrice??a.p.price)-(b.p.salePrice??b.p.price))
       .slice(0,6).map(x=>x.p);
