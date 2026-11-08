@@ -90,12 +90,13 @@ export async function runChatTool(name:string,args:Args):Promise<{text:string;pr
     const budget=num(args.budget)??Number.MAX_SAFE_INTEGER;
     const time=normalize(str(args.timeOfDay));
     const evening=/toi|evening|dem/.test(time),morning=/sang|morning|day/.test(time);
+    const eveningOnly=evening&&!morning,morningOnly=morning&&!evening;
     const stages=[
       {key:"cleanser",label:"Làm sạch",weight:3,match:(p:Product)=>/sua rua mat|gel rua mat|cleanser/.test(normalize(p.name+" "+p.category))},
       {key:"toner",label:"Cân bằng (không bắt buộc)",weight:.5,match:(p:Product)=>/toner|nuoc can bang/.test(normalize(p.name+" "+p.category))},
-      {key:"serum",label:"Serum hỗ trợ mục tiêu da",weight:2,match:(p:Product)=>/serum/.test(normalize(p.name+" "+p.category))&&(!morning||!/bha|salicylic acid/.test(normalize(p.name+" "+p.ingredients)))},
+      {key:"serum",label:"Serum hỗ trợ mục tiêu da",weight:2,match:(p:Product)=>/serum/.test(normalize(p.name+" "+p.category))&&(!morningOnly||!/bha|salicylic acid/.test(normalize(p.name+" "+p.ingredients)))},
       {key:"moisturizer",label:"Dưỡng ẩm",weight:3,match:(p:Product)=>/kem duong|sua duong|moisturizer/.test(normalize(p.name+" "+p.category))},
-      {key:"sunscreen",label:"Chống nắng (buổi sáng)",weight:3,match:(p:Product)=>/chong nang|sunscreen|spf/.test(normalize(p.name+" "+p.category))&&!evening}
+      {key:"sunscreen",label:"Chống nắng (buổi sáng)",weight:3,match:(p:Product)=>/chong nang|sunscreen|spf/.test(normalize(p.name+" "+p.category))&&!eveningOnly}
     ];
     const eligible=all.filter(p=>p.stock>0&&skinMatches(p,skin)>0);
     const options=stages.map(stage=>({stage,items:eligible.filter(stage.match).map(p=>{
@@ -113,7 +114,7 @@ export async function runChatTool(name:string,args:Args):Promise<{text:string;pr
     };
     walk(0,[],0,0);
     const selected=best.items.map((item,index)=>({step:index+1,stage:item.stage,id:item.p.id,name:item.p.name,price:item.price,stock:item.p.stock}));
-    return {text:JSON.stringify({timeOfDay:time||"sáng và tối",skinType:skin,selected,total:best.total,budget,remaining:budget===Number.MAX_SAFE_INTEGER?null:budget-best.total,notes:"Routine được chọn từ sản phẩm còn hàng và phù hợp loại da theo catalog. Toner là bước tùy chọn; điều chỉnh bước serum theo khả năng dung nạp. Dùng chống nắng vào ban ngày."}),products:best.items.map(x=>x.p)};
+    return {text:JSON.stringify({timeOfDay:time||"sáng và tối",skinType:skin,selected,total:best.total,budget,remaining:budget===Number.MAX_SAFE_INTEGER?null:budget-best.total,notes:"Routine được chọn từ sản phẩm còn hàng và phù hợp loại da theo catalog. Toner là bước tùy chọn; nếu có BHA/Salicylic Acid, ưu tiên dùng buổi tối theo khả năng dung nạp. Dùng chống nắng vào ban ngày."}),products:best.items.map(x=>x.p)};
   }
   return {text:"Công cụ không được hỗ trợ.",products:[]};
 }
