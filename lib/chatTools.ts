@@ -35,7 +35,7 @@ function overlapScore(terms:string[],haystack:string){
 function skinMatches(p:Product,skin:string){
   if(!skin)return 0;
   const wanted=normalize(skin);
-  return p.skinTypes.some(s=>normalize(s)===wanted)?4:p.skinTypes.some(s=>normalize(s)==="moi loai da")?2:0;
+  return p.skinTypes.some(s=>normalize(s)===wanted||wanted.includes(normalize(s)))?4:p.skinTypes.some(s=>normalize(s)==="moi loai da")?2:0;
 }
 function categoryMatches(p:Product,category:string){
   if(!category)return true;
@@ -70,7 +70,7 @@ export async function runChatTool(name:string,args:Args):Promise<{text:string;pr
       const stockScore=p.stock>0?2:-3;
       const brandScore=brand&&normalize(p.brand).includes(brand)?3:0;
       return {p,score:phraseBonus+queryScore+concernScore*2+skinScore+stockScore+brandScore};
-    }).filter(x=>(!queryTerms.length||x.score>=Math.min(3,queryTerms.length))&&(!skin||skinMatches(x.p,skin)>0))
+    }).filter(x=>(!queryTerms.length||x.queryScore+x.concernScore*2>=Math.min(2,queryTerms.length))&&(!skin||skinMatches(x.p,skin)>0))
       .sort((a,b)=>b.score-a.score||(b.p.stock>0?1:0)-(a.p.stock>0?1:0)||(a.p.salePrice??a.p.price)-(b.p.salePrice??b.p.price))
       .slice(0,6).map(x=>x.p);
     return {text:JSON.stringify(candidates.map(p=>({id:p.id,slug:p.slug,name:p.name,brand:p.brand,category:p.category,price:p.salePrice??p.price,stock:p.stock,skinTypes:p.skinTypes,concerns:p.concerns,description:p.description,ingredients:p.ingredients,howTo:p.howTo,volume:p.volume,variants:p.variants,tags:p.tags}))),products:candidates};
