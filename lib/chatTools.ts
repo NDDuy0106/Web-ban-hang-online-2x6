@@ -58,8 +58,7 @@ export async function runChatTool(name:string,args:Args):Promise<{text:string;pr
       if(item.candidate!.price<=remaining){selected.push({step:selected.length+1,stage:item.stage.label,id:item.candidate!.p.id,name:item.candidate!.p.name,price:item.candidate!.price,stock:item.candidate!.p.stock});remaining-=item.candidate!.price;}
     }
     const total=selected.reduce((sum,p)=>sum+p.price,0);
-    const morning=selected.filter(p=>true);
-    return {text:JSON.stringify({timeOfDay:time||"sáng và tối",skinType:skin,selected:morning,total,budget,remaining,notes:"Đây là gợi ý tham khảo từ catalog và tồn kho hiện tại; không bắt buộc dùng đủ mọi bước. Dùng chống nắng vào ban ngày."}),products:selected.map(s=>all.find(p=>p.id===s.id)!).filter(Boolean)};
+    return {text:JSON.stringify({timeOfDay:time||"sáng và tối",skinType:skin,selected,total,budget,remaining,notes:"Đây là gợi ý tham khảo từ catalog và tồn kho hiện tại; không bắt buộc dùng đủ mọi bước. Dùng chống nắng vào ban ngày."}),products:selected.map(s=>all.find(p=>p.id===s.id)!).filter(Boolean)};
   }
   return {text:"Công cụ không được hỗ trợ.",products:[]};
 }
