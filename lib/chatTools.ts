@@ -6,6 +6,7 @@ const str=(v:unknown)=>typeof v==="string"?v.trim():"";
 const num=(v:unknown)=>typeof v==="number"&&Number.isFinite(v)?v:undefined;
 const normalize=(value:string)=>value.toLocaleLowerCase("vi").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/[^a-z0-9]+/g," ").trim();
 const words=(value:string)=>normalize(value).split(/\s+/).filter(Boolean);
+function searchTerms(value:string){const normalized=normalize(value);const phrases=Object.keys(aliases).filter(key=>key.includes(" ")&&normalized.includes(key));const covered=new Set(phrases.flatMap(key=>key.split(" ")));return [...phrases,...words(normalized).filter(t=>!covered.has(t)&&!stopWords.has(t))];}
 const stopWords=new Set(["minh","toi","ban","voi","cho","mot","nhung","cac","nao","gi","la","co","va","hay","nen","muon","tim","mua","su","dung","loai","san","pham","nao","giup","tu","van","ve","da","cua","tren","web","website","sixnature"]);
 const aliases:Record<string,string[]>={
   "mun":["mun","mun an","mun dau den","mun viem","mụn"],
@@ -55,7 +56,7 @@ export async function runChatTool(name:string,args:Args):Promise<{text:string;pr
   if(name==="searchProducts"){
     const all=await getProducts();
     const query=normalize(str(args.query));
-    const queryTerms=words(query).filter(t=>!stopWords.has(t));
+    const queryTerms=searchTerms(query);
     const category=str(args.category),skin=str(args.skinType),concern=str(args.concern),brand=normalize(str(args.brand));
     const min=num(args.minPrice)??0,max=num(args.maxPrice)??Number.MAX_SAFE_INTEGER;
     const candidates=all.filter(p=>{
@@ -65,7 +66,7 @@ export async function runChatTool(name:string,args:Args):Promise<{text:string;pr
       const haystack=productText(p),text=normalize(haystack);
       const phraseBonus=query&&text.includes(query)?5:0;
       const queryScore=overlapScore(queryTerms,haystack);
-      const concernScore=overlapScore(words(concern),[p.concerns.join(" "),p.description,p.ingredients,p.tags.join(" ")].join(" "));
+      const concernScore=overlapScore(searchTerms(concern),[p.concerns.join(" "),p.description,p.ingredients,p.tags.join(" ")].join(" "));
       const skinScore=skinMatches(p,skin);
       const stockScore=p.stock>0?2:-3;
       const brandScore=brand&&normalize(p.brand).includes(brand)?3:0;
@@ -98,7 +99,7 @@ export async function runChatTool(name:string,args:Args):Promise<{text:string;pr
     ];
     const eligible=all.filter(p=>p.stock>0&&skinMatches(p,skin)>0);
     const options=stages.map(stage=>({stage,items:eligible.filter(stage.match).map(p=>{
-      const concernScore=overlapScore(words(concern),[p.concerns.join(" "),p.description,p.ingredients].join(" "));
+      const concernScore=overlapScore(searchTerms(concern),[p.concerns.join(" "),p.description,p.ingredients].join(" "));
       const score=stage.weight+concernScore*2+skinMatches(p,skin)+(p.rating>=4.8?.5:0);
       return {p,score,price:p.salePrice??p.price};
     }).sort((a,b)=>b.score-a.score||a.price-b.price).slice(0,4)}));
