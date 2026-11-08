@@ -1,0 +1,5 @@
+import {NextRequest,NextResponse} from "next/server";
+import {z} from "zod";
+import {prisma} from "@/lib/prisma";
+const schema=z.object({email:z.string().trim().email().max(200)});
+export async function POST(req:NextRequest){let email="";try{const type=req.headers.get("content-type")??"";const raw=type.includes("application/json")?await req.json():Object.fromEntries((await req.formData()).entries());const parsed=schema.safeParse(raw);if(!parsed.success)return NextResponse.json({error:"Email chưa hợp lệ."},{status:400});email=parsed.data.email.toLowerCase();await prisma.subscriber.upsert({where:{email},update:{},create:{email}});}catch{return NextResponse.json({error:"Chưa thể đăng ký lúc này."},{status:500});}if(req.headers.get("accept")?.includes("text/html"))return NextResponse.redirect(new URL("/?newsletter=success#newsletter",req.url),303);return NextResponse.json({success:true,message:"Đăng ký nhận tin thành công."});}
