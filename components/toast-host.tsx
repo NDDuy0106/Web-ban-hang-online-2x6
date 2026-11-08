@@ -1,0 +1,6 @@
+"use client";
+import {useEffect,useState} from "react";
+import {Check,X} from "lucide-react";
+type Notice={id:number;message:string};
+export function ToastHost(){const [notices,setNotices]=useState<Notice[]>([]);useEffect(()=>{const handler=(event:Event)=>{const detail=(event as CustomEvent<{message?:string}>).detail;const id=Date.now()+Math.random();setNotices(v=>[...v,{id,message:detail?.message??"Đã thêm sản phẩm vào giỏ hàng"}]);window.setTimeout(()=>setNotices(v=>v.filter(n=>n.id!==id)),3000);};window.addEventListener("sixnature:toast",handler);return()=>window.removeEventListener("sixnature:toast",handler);},[]);return <div aria-live="polite" className="fixed right-4 top-4 z-[100] flex flex-col gap-2">{notices.map(n=><div key={n.id} className="flex items-center gap-2 rounded-lg bg-[#315b43] px-4 py-3 text-sm font-medium text-white shadow-xl"><Check size={17}/>{n.message}<button onClick={()=>setNotices(v=>v.filter(x=>x.id!==n.id))} aria-label="Đóng thông báo"><X size={15}/></button></div>)}</div>}
+export function notifyAddedToCart(name:string){if(typeof window!=="undefined")window.dispatchEvent(new CustomEvent("sixnature:toast",{detail:{message:name+" đã được thêm vào giỏ hàng"}}));}
