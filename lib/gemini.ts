@@ -15,7 +15,8 @@ export const functionDeclarations=[
 {type:"function",name:"getProductDetail",description:"Lấy chi tiết sản phẩm theo id hoặc slug.",parameters:{type:"object",properties:{id:{type:"string"}},required:["id"]}},
 {type:"function",name:"getStorePolicy",description:"Tra chính sách shipping, returns, warranty hoặc payment.",parameters:{type:"object",properties:{topic:{type:"string",enum:["shipping","returns","warranty","payment"]}},required:["topic"]}},
 {type:"function",name:"buildRoutine",description:"Tạo routine theo loại da, vấn đề, ngân sách và buổi sáng/tối.",parameters:{type:"object",properties:{skinType:{type:"string"},concern:{type:"string"},budget:{type:"number"},timeOfDay:{type:"string"}},required:["skinType"]}},
-{type:"function",name:"checkStock",description:"Kiểm tra tồn kho theo id hoặc slug.",parameters:{type:"object",properties:{id:{type:"string"}},required:["id"]}}];
+{type:"function",name:"checkStock",description:"Kiểm tra tồn kho theo id hoặc slug.",parameters:{type:"object",properties:{id:{type:"string"}},required:["id"]}}
+] as const;
 let client:GoogleGenAI|null=null;
 export function getGemini(){const key=process.env.GEMINI_API_KEY;if(!key)throw new Error("GEMINI_NOT_CONFIGURED");client??=new GoogleGenAI({apiKey:key});return client;}
-export const GEMINI_MODEL=process.env.GEMINI_MODEL||"gemini-3.6-flash";
+export const GEMINI_MODEL=process.env.GEMINI_MODEL||"gemini-3.8-flash";
