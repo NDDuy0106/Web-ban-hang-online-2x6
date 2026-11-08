@@ -1,4 +1,4 @@
-# Mộc Nhiên Beauty
+# Sixnature
 
 Website bán mỹ phẩm tiếng Việt theo bố cục ảnh tham chiếu: header sáng, thanh điều hướng cam, sidebar danh mục, hero banner, ưu đãi và lưới sản phẩm. Nền trắng ngà, typography thanh lịch, ảnh sản phẩm là trung tâm.
 
@@ -37,10 +37,10 @@ Mở http://localhost:3000.
 - Trang chủ: hero, danh mục, sản phẩm bán chạy, hàng mới, ưu đãi, gợi ý theo loại da, newsletter.
 - Danh sách: tìm kiếm, lọc danh mục/thương hiệu/loại da/vấn đề da/giá/đánh giá, sắp xếp và query string.
 - Chi tiết: ảnh, biến thể, mô tả, thành phần, cách dùng, review và sản phẩm liên quan.
-- Giỏ hàng persist localStorage, coupon MOCHINH10/FREESHIP, tồn kho và freeship từ 500.000₫.
+- Giỏ hàng persist localStorage, coupon SIXNATURE10/FREESHIP, tồn kho và freeship từ 500.000₫.
 - Checkout COD/chuyển khoản, Zod validation, lưu Order/OrderItem; trang đơn hàng thành công.
 - Trang giới thiệu, đổi trả, vận chuyển, liên hệ; sitemap, robots.
-- Chatbot Mộc với 5 Gemini functions: searchProducts, getProductDetail, getStorePolicy, buildRoutine, checkStock; SSE stream token, sản phẩm hiển thị từ dữ liệu thật.
+- Chatbot Sixnature với 5 Gemini functions: searchProducts, getProductDetail, getStorePolicy, buildRoutine, checkStock; SSE stream token, sản phẩm hiển thị từ dữ liệu thật.
 - Giới hạn 500 ký tự và rate limit IP memory-based.
 
 ## Chỉnh sửa catalog và system prompt
