@@ -6,7 +6,6 @@ import Link from "next/link";
 import {money} from "@/lib/utils";
 import {useCartStore} from "@/store/cart";
 import {notifyAddedToCart} from "@/components/toast-host";
-import {notifyAddedToCart} from "@/components/toast-host";
 import type {Product} from "@/lib/catalog";
 type ChatProduct=Product;
 type Message={role:"user"|"assistant";text:string;products?:ChatProduct[]};
