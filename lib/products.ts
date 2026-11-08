@@ -1,0 +1,8 @@
+import {prisma} from "@/lib/prisma";
+import {catalog,type Product,type Skin} from "@/lib/catalog";
+import {safeJson} from "@/lib/utils";
+type DbProduct={id:string;slug:string;name:string;brand:string;category:string;price:number;salePrice:number|null;description:string;ingredients:string;howTo:string;volume:string;skinTypes:string;concerns:string;variants:string;stock:number;pao:string;rating:number;reviews:string;tags:string;image:string};
+function mapProduct(p:DbProduct):Product{return {...p,salePrice:p.salePrice??undefined,skinTypes:safeJson<Skin[]>(p.skinTypes,["Mọi loại da"]),concerns:safeJson<string[]>(p.concerns,[]),variants:safeJson<string[]>(p.variants,[]),reviews:safeJson<Product["reviews"]>(p.reviews,[]),tags:safeJson<string[]>(p.tags,[])};}
+export async function getProducts():Promise<Product[]>{try{const rows=await prisma.product.findMany({orderBy:{createdAt:"desc"}});return rows.length?rows.map(mapProduct):catalog;}catch{return catalog;}}
+export async function getProductBySlug(slug:string):Promise<Product|undefined>{try{const p=await prisma.product.findUnique({where:{slug}});return p?mapProduct(p):catalog.find(x=>x.slug===slug);}catch{return catalog.find(x=>x.slug===slug);}}
+export async function getProductById(id:string):Promise<Product|undefined>{try{const p=await prisma.product.findFirst({where:{OR:[{id},{slug:id}]}});return p?mapProduct(p):catalog.find(x=>x.id===id||x.slug===id);}catch{return catalog.find(x=>x.id===id||x.slug===id);}}

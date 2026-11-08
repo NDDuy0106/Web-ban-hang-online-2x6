@@ -1,0 +1,5 @@
+import {PrismaClient} from "@prisma/client";
+import {catalog} from "../lib/catalog";
+const prisma=new PrismaClient();
+async function main(){for(const p of catalog){const data={name:p.name,brand:p.brand,category:p.category,price:p.price,salePrice:p.salePrice,description:p.description,ingredients:p.ingredients,howTo:p.howTo,volume:p.volume,skinTypes:JSON.stringify(p.skinTypes),concerns:JSON.stringify(p.concerns),variants:JSON.stringify(p.variants),stock:p.stock,pao:p.pao,rating:p.rating,reviews:JSON.stringify(p.reviews),tags:JSON.stringify(p.tags),image:p.image};await prisma.product.upsert({where:{slug:p.slug},update:data,create:{slug:p.slug,...data}});}console.log("Đã seed "+catalog.length+" sản phẩm.");}
+main().catch((e:unknown)=>{console.error(e);process.exitCode=1;}).finally(async()=>prisma.$disconnect());
