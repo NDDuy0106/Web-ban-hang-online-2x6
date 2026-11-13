@@ -53,6 +53,8 @@ Mở http://localhost:3000.
 
 ## Chỉnh sửa catalog và system prompt
 - 20 sản phẩm và thương hiệu giả: `lib/catalog.ts`. Chạy `npm run db:seed` để seed lại.
+- Chatbot hiện dùng chung catalog mẫu 20 sản phẩm để thử nghiệm; không nhập danh sách Excel lớn vào catalog bán hàng. Dữ liệu sản phẩm mẫu không thay thế thông tin mỹ phẩm đã xác minh.
+- `searchProducts` xếp hạng theo nhu cầu, mối quan tâm, loại da và bộ lọc giá; chỉ trả tối đa 3 sản phẩm còn hàng. Điểm khớp phản ánh dữ liệu catalog, không phải hiệu quả điều trị. Chạy `node --import tsx --test tests/product-recommendations.test.ts` để kiểm tra xếp hạng.
 - System instruction + function declarations: `lib/gemini.ts`.
 - Logic tool và policy: `lib/chatTools.ts`.
 - Design tokens: `app/globals.css`.

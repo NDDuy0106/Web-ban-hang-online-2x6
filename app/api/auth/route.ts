@@ -6,12 +6,20 @@ import {clearSession,createSession,getSession,isAuthConfigured} from "@/lib/auth
 
 export const runtime="nodejs";
 
-const schema=z.object({
-  action:z.enum(["register","login"]),
-  fullName:z.string().trim().min(2).max(80).optional(),
+const credentialsSchema=z.object({
   email:z.string().trim().email().max(160),
   password:z.string().min(8).max(72)
 });
+const schema=z.discriminatedUnion("action",[
+  credentialsSchema.extend({
+    action:z.literal("register"),
+    fullName:z.string().trim().min(2,"Họ tên phải có ít nhất 2 ký tự.").max(80)
+  }),
+  credentialsSchema.extend({
+    action:z.literal("login"),
+    fullName:z.string().optional()
+  })
+]);
 
 export async function GET(){
   try{
@@ -53,10 +61,6 @@ export async function POST(req:NextRequest){
 
   try{
     if(data.action==="register"){
-      if(!data.fullName){
-        return NextResponse.json({error:"Vui lòng nhập họ tên."},{status:400});
-      }
-
       const exists=await prisma.user.findUnique({where:{email}});
       if(exists){
         return NextResponse.json({
