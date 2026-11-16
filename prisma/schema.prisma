@@ -29,6 +29,7 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orderItems OrderItem[]
+  wishlistItems WishlistItem[]
   @@index([category])
   @@index([brand])
 }
@@ -75,6 +76,19 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   beautyProfile BeautyProfile?
+  wishlistItems WishlistItem[]
+}
+
+model WishlistItem {
+  id String @id @default(cuid())
+  userId String
+  productId String
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  @@unique([userId, productId])
+  @@index([productId])
+  @@index([userId, createdAt])
 }
 
 model BeautyProfile {
