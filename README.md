@@ -25,7 +25,7 @@ Mở `.env.local` và điền cấu hình local:
 ```env
 DATABASE_URL="file:./dev.db"
 GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-GEMINI_MODEL="gemini-3.8-flash"
+GEMINI_MODEL="gemini-3.1-flash-lite"
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 AUTH_SECRET="YOUR_RANDOM_SECRET_AT_LEAST_32_CHARACTERS"
 ```
@@ -67,11 +67,14 @@ Các lệnh lint, type-check và test xếp hạng sản phẩm không gọi Gem
 ## Chatbot hiện tại
 
 - Prompt, vai trò tư vấn, quy tắc an toàn và khai báo Gemini functions: `lib/gemini.ts`.
+- Prompt đang hoạt động là v2 (bản nháp cần đánh giá) trong `lib/gemini.ts`; baseline v1 được lưu nguyên văn tại [docs/prompts/system-instruction-v1.md](./docs/prompts/system-instruction-v1.md). Xem [nhật ký v2](./docs/prompts/prompt-v2-notes.md) và [ví dụ hội thoại/xử lý phản đối](./docs/chatbot-dialogue-examples.md).
 - Tìm kiếm, chấm điểm sản phẩm và xây routine: `lib/product-recommendations.ts`, `lib/chatTools.ts`.
 - API Gemini, function calling, hồ sơ làm đẹp có consent và SSE: `app/api/chat/route.ts`.
 - Giao diện chat và hiển thị sản phẩm: `components/chat-widget.tsx`.
 - Catalog mẫu 20 sản phẩm: `lib/catalog.ts`; `npm run db:seed` upsert catalog vào database local.
-- Các function hiện có: `searchProducts`, `getProductDetail`, `getStorePolicy`, `buildRoutine`, `checkStock`.
+- Các function hiện có: `searchProducts`, `getProductDetail`, `getStorePolicy` (gồm chủ đề ưu đãi), `buildRoutine`, `checkStock`.
+- Tìm kiếm có một số từ đồng nghĩa tiếng Việt/Anh như mụn, cấp ẩm, lão hóa, nám và kem lót; các trường hợp mới được kiểm tra bằng fixture trong test, không thêm sản phẩm giả vào catalog hiển thị trên web.
+- Thẻ sản phẩm trong chat chỉ hiện khi câu trả lời cuối của AI nhắc đúng tên đầy đủ của sản phẩm đã tra cứu; sản phẩm chỉ được tra qua tool nhưng không được đề xuất sẽ không tự hiện thành thẻ.
 
 Catalog hiện là dữ liệu mẫu phục vụ phát triển, không thay thế dữ liệu sản phẩm đã xác minh từ nhà sản xuất. Điểm khớp sản phẩm là mức khớp với dữ liệu catalog, không phải hiệu quả điều trị hay bảo đảm phù hợp y khoa. Không tự suy diễn thành phần, công dụng hoặc hướng dẫn dùng.
 
@@ -84,15 +87,15 @@ Mã ưu đãi trong checkout hiện tại: `SIXNATURE10` giảm 10% cho đơn t�
 | Thành viên | Phạm vi | File chính | Bàn giao |
 |---|---|---|---|
 | 1 — Prompt | Lưu prompt hiện tại làm v1; cải thiện prompt v2 về phong cách trò chuyện, quy trình tư vấn và xử lý phản đối. Tích hợp ví dụ mẫu, chỉnh theo kết quả đánh giá. Chỉ thành viên này sửa prompt trong thời gian làm việc song song. | `lib/gemini.ts` | Prompt v1/v2, nhật ký thay đổi và lý do chỉnh. |
-| 2 — Hội thoại mẫu | Soạn 10–15 ví dụ “máy móc/người thật”; 4–5 tình huống phản đối như giá cao, sợ kích ứng, đã thử nhiều sản phẩm hoặc muốn suy nghĩ thêm; đề xuất cách nhận biết và phản hồi cảm xúc. | Tài liệu ví dụ trong nhánh riêng; bàn giao cho thành viên 1 và 5. | Bộ ví dụ được rà soát, không đưa toàn bộ ví dụ dài vào prompt nếu không cần. |
+| 2 — Hội thoại mẫu | Rà soát và bổ sung ví dụ trong [docs/chatbot-dialogue-examples.md](./docs/chatbot-dialogue-examples.md): 10–15 cặp “máy móc/tự nhiên hơn”, 4–5 mẫu phản đối, quy tắc nhận biết và phản hồi cảm xúc. | Tài liệu ví dụ trong nhánh riêng; bàn giao cho thành viên 1 và 5. | Bộ ví dụ được rà soát, không đưa toàn bộ ví dụ dài vào prompt nếu không cần. |
 | 3 — Dữ liệu và công cụ | Chỉ thêm sản phẩm demo khi ghi rõ dữ liệu nào là giả/chưa xác minh. Bổ sung từ đồng nghĩa cần thiết vào `lib/product-recommendations.ts`, thêm test. Đối chiếu mọi thông tin khuyến mãi với checkout trước khi hướng dẫn AI. | `lib/catalog.ts`, `lib/product-recommendations.ts`, `tests/` | Catalog demo, thay đổi search và test chạy được. |
 | 4 — Giao diện và luồng chat | Cải thiện thẻ sản phẩm và giao diện; nếu làm 👍/👎 thì thống nhất nơi lưu và cách xử lý phản hồi. Phối hợp với nhóm trước khi đổi định dạng SSE hoặc contract sản phẩm. | `components/chat-widget.tsx`, `app/api/chat/route.ts` | Chat UI và bản demo ổn định. |
-| 5 — Kiểm thử và đánh giá | Soạn 20–25 tình huống: câu hỏi chung, cảm xúc, phản đối giá, routine, so sánh, tình huống nhạy cảm, ngoài phạm vi và prompt injection. Chấm v1/v2 theo 4 tiêu chí: tự nhiên, đúng nhu cầu, an toàn, ngắn gọn/có bước tiếp theo. | Tài liệu tình huống và bảng đánh giá; phối hợp nếu thêm test code. | Điểm trước/sau, lỗi cụ thể, đề xuất vòng sửa tiếp theo. |
+| 5 — Kiểm thử và đánh giá | Dùng bộ 25 tình huống và rubric tại [docs/chatbot-evaluation.md](./docs/chatbot-evaluation.md); có thể bổ sung ca nếu phát hiện lỗ hổng. Chấm v1/v2 theo 4 tiêu chí: tự nhiên, đúng nhu cầu, an toàn, ngắn gọn/có bước tiếp theo. | Bản ghi câu trả lời, bảng điểm trước/sau, lỗi cụ thể và đề xuất vòng sửa tiếp theo. |
 
 ### Thứ tự và tiêu chí kiểm thử
 
-1. Thành viên 2 chuẩn bị ví dụ và thành viên 5 chuẩn bị tình huống kiểm thử.
-2. Thành viên 1 lưu prompt hiện hành làm baseline v1, tạo v2 và chỉ chọn một số ví dụ ngắn, tiêu biểu để đưa vào system instruction. Prompt được gửi mỗi lượt gọi Gemini, nên ví dụ dài làm tăng token và chi phí.
+1. Prompt hiện tại đã được lưu làm baseline v1 tại `docs/prompts/system-instruction-v1.md` (nguồn: commit `94bcdde`). Bản nháp v2 đang hoạt động trong `lib/gemini.ts`; các ví dụ tham khảo nằm trong `docs/chatbot-dialogue-examples.md`.
+2. Thành viên 1 rà soát v2 và chỉ giữ một số hướng dẫn/ví dụ ngắn, tiêu biểu trong system instruction. Prompt được gửi mỗi lượt gọi Gemini, nên ví dụ dài làm tăng token và chi phí.
 3. Thành viên 3 hoàn tất thay đổi catalog/search độc lập và chạy test trước khi thành viên 5 đánh giá.
 4. Thành viên 5 chạy cùng bộ tình huống cho v1 và v2, ghi lại câu trả lời, điểm và lỗi. Chỉ người phụ trách này chạy bộ kiểm thử chính thức để tiết kiệm quota.
 5. Thành viên 4 hoàn thiện cách hiển thị thẻ theo sản phẩm mà câu trả lời cuối thực sự khuyến nghị. Kết quả function call chưa chắc đã được AI đề xuất; không nên mặc định hiển thị mọi sản phẩm từng được tra ở các vòng tool.
@@ -145,6 +148,8 @@ Không stage `.env`, `.env.local`, database local, hoặc file build. Tách nhá
 
 - Chat báo chưa cấu hình: kiểm tra `GEMINI_API_KEY` trong `.env.local`, rồi khởi động lại server.
 - Gemini báo 429/quota: dừng lượt thử lặp, kiểm tra quota và báo người phụ trách API key.
+- Chatbot không phản hồi: request Gemini bị giới hạn tối đa khoảng 35 giây ở server và giao diện báo lỗi sau 40 giây; kiểm tra terminal chạy Next.js để xem lỗi API, mạng hoặc quota thay vì chờ lâu hay gửi lặp câu hỏi.
+- Gemini trả lỗi 503/quá tải: đặt `GEMINI_MODEL="gemini-3.1-flash-lite"` trong `.env.local` rồi khởi động lại server. Model cũ có thể đang quá tải tạm thời; nếu lỗi tiếp diễn, kiểm tra terminal và model được tài khoản hỗ trợ.
 - Lỗi model: kiểm tra `GEMINI_MODEL` có được tài khoản/project hỗ trợ không.
 - Thiếu bảng Prisma: chạy `npx prisma migrate dev`.
 - Không đăng nhập được local: kiểm tra `AUTH_SECRET` có ít nhất 32 ký tự và database đã migrate.

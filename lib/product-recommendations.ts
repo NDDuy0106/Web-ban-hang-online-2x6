@@ -29,7 +29,10 @@ const aliases:Record<string,string[]>={
   "chong nang":["chong nang","spf","uv","bao ve da"],
   "lam sach":["lam sach","sua rua mat","cleanser","tay trang"],
   "toc kho":["toc kho","kho xo","duong toc","keratin","argan"],
-  "duong the":["duong the","co the","body lotion","duong am co the"]
+  "duong the":["duong the","co the","body lotion","duong am co the"],
+  "lao hoa":["lao hoa","anti age","anti aging","wrinkle","fine lines"],
+  "nam":["nam","sac to","khong deu mau","dark spot","dark spots","pigment","melasma"],
+  "kem lot":["kem lot","primer","makeup base","base makeup"]
 };
 
 export function normalize(value:string){
