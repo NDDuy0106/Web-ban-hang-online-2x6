@@ -42,6 +42,13 @@ test("does not return unrelated products for an unmatched need",()=>{
   assert.deepEqual(ranked,[]);
 });
 
+test("matches blackhead phrasing to products with relevant pore-care ingredients",()=>{
+  const bha=makeProduct({id:"bha",name:"Serum BHA",ingredients:"Salicylic Acid",concerns:["Lỗ chân lông"]});
+  const moisturizer=makeProduct({id:"moisturizer",name:"Kem dưỡng",ingredients:"Glycerin",concerns:["Cấp ẩm"]});
+  const ranked=rankProducts([moisturizer,bha],{query:"mụn đầu đen"});
+  assert.deepEqual(ranked.map(item=>item.product.id),["bha"]);
+});
+
 test("supports category synonyms while keeping category as a hard filter",()=>{
   const skincare=makeProduct({id:"skincare"});
   const makeup=makeProduct({id:"makeup",category:"Trang điểm"});

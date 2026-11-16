@@ -20,6 +20,7 @@ const stopWords=new Set(["minh","toi","ban","voi","cho","mot","nhung","cac","nao
 const aliases:Record<string,string[]>={
   "mun":["mun","mun an","mun dau den","mun viem"],
   "mun an":["mun","mun an","lo chan long","bha","salicylic acid"],
+  "mun dau den":["mun dau den","mun","lo chan long","bha","salicylic acid"],
   "lo chan long":["lo chan long","dau thua","mun an","bha"],
   "dau thua":["dau thua","da dau","niacinamide","zinc"],
   "tham":["tham","tham mun","khong deu mau","vitamin c","niacinamide"],
